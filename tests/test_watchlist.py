@@ -8,6 +8,7 @@ tests/test_collection.py.
 import pytest
 from app import create_app, db
 from models import User, Film, WatchlistEntry
+from services.collection_service import FilmNotFoundError
 from services.watchlist_service import (
     add_to_watchlist,
     get_watchlist,
@@ -87,3 +88,17 @@ def test_add_to_watchlist_duplicate_raises(app, sample_user, sample_film):
             user_id=sample_user, film_id=sample_film
         ).count()
         assert count == 1
+
+
+# ── Nonexistent film ─────────────────────────────────────────────────────────
+
+def test_add_to_watchlist_nonexistent_film_raises(app, sample_user):
+    """
+    Adding a film_id that doesn't exist in the database should raise
+    FilmNotFoundError, not a database integrity error.
+    """
+    with app.app_context():
+        fake_film_id = 999999
+
+        with pytest.raises(FilmNotFoundError):
+            add_to_watchlist(user_id=sample_user, film_id=fake_film_id)
