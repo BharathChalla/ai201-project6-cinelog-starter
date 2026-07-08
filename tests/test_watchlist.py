@@ -64,12 +64,24 @@ def test_add_to_watchlist_creates_entry(app, sample_user, sample_film):
         assert entry is not None
         assert entry.user_id == sample_user
         assert entry.film_id == sample_film
+        assert entry.public is True
 
         # Verify it persisted
         in_db = WatchlistEntry.query.filter_by(
             user_id=sample_user, film_id=sample_film
         ).first()
         assert in_db is not None
+
+
+def test_add_to_watchlist_respects_public_false(app, sample_user, sample_film):
+    """
+    Callers can explicitly opt an entry out of the public=True default.
+    """
+    with app.app_context():
+        entry = add_to_watchlist(
+            user_id=sample_user, film_id=sample_film, public=False
+        )
+        assert entry.public is False
 
 
 # ── Deduplication ────────────────────────────────────────────────────────────
