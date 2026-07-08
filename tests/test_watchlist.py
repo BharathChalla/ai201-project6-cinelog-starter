@@ -143,3 +143,31 @@ def test_remove_from_watchlist_not_present_raises(app, sample_user, sample_film)
     with app.app_context():
         with pytest.raises(NotOnWatchlistError):
             remove_from_watchlist(user_id=sample_user, film_id=sample_film)
+
+
+# ── get_watchlist sort order (edge case chosen for Comment 5) ────────────────
+
+def test_get_watchlist_returns_alphabetical_regardless_of_add_order(app, sample_user):
+    """
+    get_watchlist() should sort by title alphabetically even when films were
+    added to the watchlist in a different (non-alphabetical) order. This
+    guards the Comment 5 decision to keep alphabetical order: a naive
+    implementation could accidentally sort by insertion/id order instead.
+    """
+    with app.app_context():
+        from models import Film
+
+        film_z = Film(title="Zodiac", year=2007, genre="Thriller")
+        film_a = Film(title="Alien", year=1979, genre="Horror")
+        db.session.add_all([film_z, film_a])
+        db.session.commit()
+
+        # Add "Zodiac" first, "Alien" second — insertion order is the
+        # opposite of alphabetical order.
+        add_to_watchlist(user_id=sample_user, film_id=film_z.id)
+        add_to_watchlist(user_id=sample_user, film_id=film_a.id)
+
+        watchlist = get_watchlist(sample_user)
+        titles = [f["title"] for f in watchlist]
+
+        assert titles == ["Alien", "Zodiac"]
