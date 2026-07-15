@@ -96,7 +96,7 @@ Adds a watchlist to CineLog so users can save films they intend to watch, separa
 ### Commit history
 `feature/watchlist`, rebased on `origin/main`, no merge commits — 10 conventional commits below, plus one final commit (not shown here, since a screenshot taken before a commit exists can never include that commit) that adds the `git log --oneline` screenshot itself:
 ```
-(this commit) docs: add pr-response.md with review responses and design decisions
+74c8a35 docs: add pr-response.md with review responses and design decisions
 36298bd fix: update WatchlistEntry film_id to UUID after main branch refactor
 f03988e test: verify get_watchlist sorts alphabetically regardless of add order
 1d92908 fix: add missing Film.watchlist_entries relationship for entry.film access
@@ -108,3 +108,5 @@ ec731d7 fix: rename save_to_watchlist to add_to_watchlist per naming convention
 9aa0da2 feat: add watchlist model and add_to_watchlist endpoint
 ```
 See the screenshot below (added in the follow-up commit) for the real, final `git log --oneline` output.
+
+![git log --oneline on feature/watchlist](git-log-oneline.png)
